@@ -247,8 +247,7 @@ def is_colab():
 def save_yolo_conf(data, save_path):
     """
     Saves prediction labels with confidence level in yolo format
-
-
+    Input: pickled formatted data and save path
     """
     # create dir if not present
     Path(save_path).parent.mkdir(parents=True, exist_ok=True)
@@ -263,8 +262,8 @@ def save_yolo_conf(data, save_path):
         'width' :  [data[i].bbox.maxx - data[i].bbox.minx for i in range(num_objects)],
         'height' : [data[i].bbox.maxy - data[i].bbox.miny for i in range(num_objects)]
     })
-    # Save dataframe as txt <class> <confidence> <x_center> <y_center> <width> <height>
-    with open('prueba.txt', 'w') as f:
+    # Save dataframe as txt <class> <confidence> <x_center> <y_center> <width> <height>, TODO normalize (have to find where to get original image size)
+    with open(save_path, 'w') as f:
         dfAsString = df.to_string(header=False, index=False)
         f.write(dfAsString)
 
