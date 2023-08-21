@@ -256,12 +256,12 @@ def save_yolo_conf(data, save_path):
     num_objects = len(data)
     # Create dataframe with yolo format
     df = pd.DataFrame({
-        'class' : [mi_data[i].category.id for i in range(num_objects)],
-        'confidence' : [mi_data[i].score.value for i in range(num_objects)],
-        'x_center' : [(mi_data[i].bbox.minx + mi_data[i].bbox.maxx)/2 for i in range(num_objects)],
-        'y_center' : [(mi_data[i].bbox.miny + mi_data[i].bbox.maxy)/2 for i in range(num_objects)],
-        'width' :  [mi_data[i].bbox.maxx - mi_data[i].bbox.minx for i in range(num_objects)],
-        'height' : [mi_data[i].bbox.maxy - mi_data[i].bbox.miny for i in range(num_objects)]
+        'class' : [data[i].category.id for i in range(num_objects)],
+        'confidence' : [data[i].score.value for i in range(num_objects)],
+        'x_center' : [(data[i].bbox.minx + data[i].bbox.maxx)/2 for i in range(num_objects)],
+        'y_center' : [(data[i].bbox.miny + data[i].bbox.maxy)/2 for i in range(num_objects)],
+        'width' :  [data[i].bbox.maxx - data[i].bbox.minx for i in range(num_objects)],
+        'height' : [data[i].bbox.maxy - data[i].bbox.miny for i in range(num_objects)]
     })
     # Save dataframe as txt <class> <confidence> <x_center> <y_center> <width> <height>
     with open('prueba.txt', 'w') as f:
