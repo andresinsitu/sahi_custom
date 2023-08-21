@@ -38,7 +38,7 @@ from sahi.utils.cv import (
     read_image_as_pil,
     visualize_object_predictions,
 )
-from sahi.utils.file import Path, increment_path, list_files, save_json, save_pickle
+from sahi.utils.file import Path, increment_path, list_files, save_json, save_pickle, save_yolo_conf
 from sahi.utils.import_utils import check_requirements
 
 POSTPROCESS_NAME_TO_CLASS = {
@@ -353,6 +353,8 @@ def predict(
     view_video: bool = False,
     frame_skip_interval: int = 0,
     export_pickle: bool = False,
+    export_yolo:bool = False,
+    export_yolo_conf: bool = False,
     export_crop: bool = False,
     dataset_json_path: bool = None,
     project: str = "runs/predict",
@@ -429,6 +431,10 @@ def predict(
             If view_video or export_visual is slow, you can process one frames of 3(for exp: --frame_skip_interval=3).
         export_pickle: bool
             Export predictions as .pickle
+        export_yolo: bool
+            Export predictions without confidence level in YOLO format (<class> <confidence> <x_center> <y_center> <width> <height>)
+        export_yolo_conf: bool
+            Export predictions with confidence in YOLO format (<class> <x_center> <y_center> <width> <height>)
         export_crop: bool
             Export predictions as cropped images.
         dataset_json_path: str
@@ -474,7 +480,8 @@ def predict(
     visual_dir = save_dir / "visuals"
     visual_with_gt_dir = save_dir / "visuals_with_gt"
     pickle_dir = save_dir / "pickles"
-    if not novisual or export_pickle or export_crop or dataset_json_path is not None:
+    labels_dir = save_dir / "labels"
+    if not novisual or export_pickle or export_label or export_label_conf or export_crop or dataset_json_path is not None:
         save_dir.mkdir(parents=True, exist_ok=True)  # make dir
 
     # init image iterator
@@ -649,6 +656,15 @@ def predict(
         if export_pickle:
             save_path = str(pickle_dir / Path(relative_filepath).parent / (filename_without_extension + ".pickle"))
             save_pickle(data=object_prediction_list, save_path=save_path)
+
+        # export prediction labels in yolo format
+        if export_yolo:
+            save_path = str(labels_dir / Path(relative_filepath).parent / (filename_without_extension + ".txt"))
+        # export prediction labels with confidence in yolo format
+        if export_yolo_conf:
+            save_path = str(labels_dir / Path(relative_filepath).parent / (filename_without_extension + ".txt"))
+            save_yolo_conf(data=object_prediction_list, save_path=save_path)
+
 
         # export visualization
         if not novisual or view_video:

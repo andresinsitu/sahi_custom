@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Optional
 
 import numpy as np
+import pandas as pd
 
 
 def unzip(file_path: str, dest_dir: str):
@@ -242,3 +243,29 @@ def is_colab():
 
     # Is environment a Google Colab instance?
     return "google.colab" in sys.modules
+
+def save_yolo_conf(data, save_path):
+    """
+    Saves prediction labels with confidence level in yolo format
+
+
+    """
+    # create dir if not present
+    Path(save_path).parent.mkdir(parents=True, exist_ok=True)
+    # Number of objects in the image
+    num_objects = len(data)
+    # Create dataframe with yolo format
+    df = pd.DataFrame({
+        'class' : [mi_data[i].category.id for i in range(num_objects)],
+        'confidence' : [mi_data[i].score.value for i in range(num_objects)],
+        'x_center' : [(mi_data[i].bbox.minx + mi_data[i].bbox.maxx)/2 for i in range(num_objects)],
+        'y_center' : [(mi_data[i].bbox.miny + mi_data[i].bbox.maxy)/2 for i in range(num_objects)],
+        'width' :  [mi_data[i].bbox.maxx - mi_data[i].bbox.minx for i in range(num_objects)],
+        'height' : [mi_data[i].bbox.maxy - mi_data[i].bbox.miny for i in range(num_objects)]
+    })
+    # Save dataframe as txt <class> <confidence> <x_center> <y_center> <width> <height>
+    with open('prueba.txt', 'w') as f:
+        dfAsString = df.to_string(header=False, index=False)
+        f.write(dfAsString)
+
+
