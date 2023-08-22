@@ -548,6 +548,8 @@ def predict(
 
         # load image
         image_as_pil = read_image_as_pil(image_path)
+        #get image dimensions
+        image_shape = image_as_pil.size
 
         # perform prediction
         if not no_sliced_prediction:
@@ -663,7 +665,7 @@ def predict(
         # export prediction labels with confidence in yolo format
         if export_yolo_conf:
             save_path = str(labels_dir / Path(relative_filepath).parent / (filename_without_extension + ".txt"))
-            save_yolo_conf(data=object_prediction_list, save_path=save_path)
+            save_yolo_conf(data=object_prediction_list, save_path=save_path, image_shape=image_shape)
 
 
         # export visualization

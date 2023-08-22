@@ -11,6 +11,7 @@ import urllib.request
 import zipfile
 from pathlib import Path
 from typing import Optional
+from sahi.utils.cv import read_image_as_pil
 
 import numpy as np
 import pandas as pd
@@ -244,25 +245,26 @@ def is_colab():
     # Is environment a Google Colab instance?
     return "google.colab" in sys.modules
 
-def save_yolo_conf(data, save_path):
+def save_yolo_conf(data, save_path,image_shape):
     """
     Saves prediction labels with confidence level in yolo format
-    Input: pickled formatted data and save path
+    Input: pickled formatted data, save path and shape of original image
     """
     # create dir if not present
     Path(save_path).parent.mkdir(parents=True, exist_ok=True)
+    #original image size
     # Number of objects in the image
     num_objects = len(data)
     # Create dataframe with yolo format
     df = pd.DataFrame({
         'class' : [data[i].category.id for i in range(num_objects)],
         'confidence' : [data[i].score.value for i in range(num_objects)],
-        'x_center' : [(data[i].bbox.minx + data[i].bbox.maxx)/2 for i in range(num_objects)],
-        'y_center' : [(data[i].bbox.miny + data[i].bbox.maxy)/2 for i in range(num_objects)],
-        'width' :  [data[i].bbox.maxx - data[i].bbox.minx for i in range(num_objects)],
-        'height' : [data[i].bbox.maxy - data[i].bbox.miny for i in range(num_objects)]
+        'x_center' : [(data[i].bbox.minx + data[i].bbox.maxx)/(2*image_shape[0]) for i in range(num_objects)],
+        'y_center' : [(data[i].bbox.miny + data[i].bbox.maxy)/(2*image_shape[1]) for i in range(num_objects)],
+        'width' :  [(data[i].bbox.maxx - data[i].bbox.minx)/(image_shape[0])  for i in range(num_objects)],
+        'height' : [(data[i].bbox.maxy - data[i].bbox.miny)/(image_shape[1])  for i in range(num_objects)]
     })
-    # Save dataframe as txt <class> <confidence> <x_center> <y_center> <width> <height>, TODO normalize (have to find where to get original image size)
+    # Save dataframe as txt <class> <confidence> <x_center> <y_center> <width> <height> TODO something is wrong in the calculation of coordinates, some are more than 1
     with open(save_path, 'w') as f:
         dfAsString = df.to_string(header=False, index=False)
         f.write(dfAsString)
