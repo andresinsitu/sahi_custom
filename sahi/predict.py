@@ -38,7 +38,7 @@ from sahi.utils.cv import (
     read_image_as_pil,
     visualize_object_predictions,
 )
-from sahi.utils.file import Path, increment_path, list_files, save_json, save_pickle, save_yolo_conf
+from sahi.utils.file import Path, increment_path, list_files, save_json, save_pickle, save_yolo, save_yolo_conf
 from sahi.utils.import_utils import check_requirements
 
 POSTPROCESS_NAME_TO_CLASS = {
@@ -662,6 +662,7 @@ def predict(
         # export prediction labels in yolo format
         if export_yolo:
             save_path = str(labels_dir / Path(relative_filepath).parent / (filename_without_extension + ".txt"))
+            save_yolo(data=object_prediction_list, save_path=save_path, image_shape=image_shape)
         # export prediction labels with confidence in yolo format
         if export_yolo_conf:
             save_path = str(labels_dir / Path(relative_filepath).parent / (filename_without_extension + ".txt"))
