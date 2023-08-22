@@ -432,9 +432,9 @@ def predict(
         export_pickle: bool
             Export predictions as .pickle
         export_yolo: bool
-            Export predictions without confidence level in YOLO format (<class> <confidence> <x_center> <y_center> <width> <height>)
+            Export predictions without confidence level in YOLO format (<class> <x_center> <y_center> <width> <height>)
         export_yolo_conf: bool
-            Export predictions with confidence in YOLO format (<class> <x_center> <y_center> <width> <height>)
+            Export predictions with confidence in YOLO format (<class> <confidence> <x_center> <y_center> <width> <height>)
         export_crop: bool
             Export predictions as cropped images.
         dataset_json_path: str
