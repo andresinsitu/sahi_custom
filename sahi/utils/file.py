@@ -263,10 +263,12 @@ def save_yolo(data, save_path,image_shape):
         'width' :  [(data[i].bbox.maxx - data[i].bbox.minx)/(image_shape[0])  for i in range(num_objects)],
         'height' : [(data[i].bbox.maxy - data[i].bbox.miny)/(image_shape[1])  for i in range(num_objects)]
     })
-    # Save dataframe as txt <class> <confidence> <x_center> <y_center> <width> <height> TODO something is wrong in the calculation of coordinates, some are more than 1
-    with open(save_path, 'w') as f:
-        dfAsString = df.to_string(header=False, index=False)
-        f.write(dfAsString)
+    # Save dataframe as txt <class> <confidence> <x_center> <y_center> <width> <height>
+
+    if not df.empty: # Not save when there are no predictions
+        with open(save_path, 'w') as f:
+            dfAsString = df.to_string(header=False, index=False)
+            f.write(dfAsString)
 
 def save_yolo_conf(data, save_path,image_shape):
     """
@@ -288,8 +290,8 @@ def save_yolo_conf(data, save_path,image_shape):
         'confidence' : [data[i].score.value for i in range(num_objects)],
     })
     # Save dataframe as txt <class> <confidence> <x_center> <y_center> <width> <height> TODO something is wrong in the calculation of coordinates, some are more than 1
-    with open(save_path, 'w') as f:
-        dfAsString = df.to_string(header=False, index=False)
-        f.write(dfAsString)
-
+    if not df.empty: # Not save when there are no predictions
+        with open(save_path, 'w') as f:
+            dfAsString = df.to_string(header=False, index=False)
+            f.write(dfAsString)
 
