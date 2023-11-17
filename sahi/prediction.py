@@ -159,7 +159,7 @@ class PredictionResult:
         image: Union[Image.Image, str, np.ndarray],
         durations_in_seconds: Optional[Dict] = None,
     ):
-        self.image: Image.Image = read_image_as_pil(image)
+        self.image: Image.Image = read_image_as_pil(image) #TODO: make it dynamic on batch inference
         self.image_width, self.image_height = self.image.size
         self.object_prediction_list: List[ObjectPrediction] = object_prediction_list
         self.durations_in_seconds = durations_in_seconds

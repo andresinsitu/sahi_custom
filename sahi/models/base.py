@@ -153,7 +153,7 @@ class DetectionModel:
 
     def convert_original_predictions(
         self,
-        shift_amount: Optional[List[int]] = [0, 0],
+        shift_amount: Optional[List] = [0, 0],
         full_shape: Optional[List[int]] = None,
     ):
         """
@@ -174,7 +174,8 @@ class DetectionModel:
 
     @property
     def object_prediction_list(self):
-        return self._object_prediction_list_per_image[0]
+        #return self._object_prediction_list_per_image[0]
+        return [obj_pred for lista in self._object_prediction_list_per_image for obj_pred in lista]
 
     @property
     def object_prediction_list_per_image(self):

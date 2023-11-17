@@ -47,21 +47,25 @@ class Yolov8DetectionModel(DetectionModel):
             category_mapping = {str(ind): category_name for ind, category_name in enumerate(self.category_names)}
             self.category_mapping = category_mapping
 
-    def perform_inference(self, image: np.ndarray):
+    def perform_inference(self, image: np.ndarray, num_batch: int = 1):
         """
         Prediction is performed using self.model and the prediction result is set to self._original_predictions.
         Args:
-            image: np.ndarray
+            image: np.ndarray or list of np.ndarray
                 A numpy array that contains the image to be predicted. 3 channel image should be in RGB order.
         """
 
         # Confirm model is loaded
         if self.model is None:
             raise ValueError("Model is not loaded, load it by calling .load_model()")
-        prediction_result = self.model(image[:, :, ::-1], verbose=False)  # YOLOv8 expects numpy arrays to have BGR
+        if num_batch == 1:
+            prediction_result = self.model(image[:, :, ::-1], verbose=False)  # YOLOv8 expects numpy arrays to have BGR
+        else:
+            prediction_result = self.model([img[:, :, ::-1] for img in image] , verbose=False)  # YOLOv8 expects numpy arrays to have BGR
+            
         prediction_result = [
             result.boxes.data[result.boxes.data[:, 4] >= self.confidence_threshold] for result in prediction_result
-        ]
+        ]     
 
         self._original_predictions = prediction_result
 
@@ -102,14 +106,16 @@ class Yolov8DetectionModel(DetectionModel):
         original_predictions = self._original_predictions
 
         # compatilibty for sahi v0.8.15
-        shift_amount_list = fix_shift_amount_list(shift_amount_list)
+        if not isinstance(shift_amount_list[0],list):
+            shift_amount_list = fix_shift_amount_list(shift_amount_list)
         full_shape_list = fix_full_shape_list(full_shape_list)
 
         # handle all predictions
         object_prediction_list_per_image = []
         for image_ind, image_predictions_in_xyxy_format in enumerate(original_predictions):
             shift_amount = shift_amount_list[image_ind]
-            full_shape = None if full_shape_list is None else full_shape_list[image_ind]
+            #full_shape = None if full_shape_list is None else full_shape_list[image_ind]
+            full_shape = None if full_shape_list is None else full_shape_list[0]
             object_prediction_list = []
 
             # process predictions
